@@ -1,0 +1,11 @@
+# Unused SDKs
+sdks/cs/
+sdks/java/
+sdks/javascript/
+
+# Windows Zone.Identifier files
+*.Zone.Identifier
+
+# Python
+__pycache__/
+*.pyc
