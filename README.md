@@ -1,5 +1,58 @@
 # AOthello
 
+## My Solution
+
+The bot is located in `sdks/python/`. It uses a minimax search algorithm with configurable depth, positional weighting, and mobility scoring to select the best move each turn.
+
+### Prerequisites
+
+- **Java 17+** — to run the game server (`othello.jar`)
+- **Python 3.5+** — to run the bot (no external packages required)
+
+### Running the bot
+
+**Option 1 — Bash script (macOS / Linux / WSL):**
+
+Run the server and client together with a prompt between them:
+```
+./run_server_and_client.sh
+```
+
+Or run them separately in two terminals:
+```
+./run_server.sh       # Terminal 1: starts the game server
+./run_client.sh       # Terminal 2: starts the bot
+```
+
+**Option 2 — Manual (any OS):**
+
+In one terminal:
+```
+java -jar othello.jar --p1-type remote --p2-type random --wait-for-ui
+```
+In a second terminal:
+```
+python3 sdks/python/client.py
+```
+
+Then open http://localhost:8080 in a browser to watch the game.
+
+### Running the tests
+
+Unit tests:
+```
+python3 -m pytest sdks/python/test.py
+```
+
+Integration test (requires Java):
+```
+python3 -m pytest sdks/python/test_integration.py
+```
+
+---
+
+## Original Challenge
+
 Welcome to this year's Atomic Accelerator challenge. You'll be creating a bot to play the game of Othello!
 
 To begin, clone this repository.
