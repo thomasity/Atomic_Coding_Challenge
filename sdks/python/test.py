@@ -7,7 +7,6 @@ from ai import (
 )
 from client import prepare_response
 
-# Standard starting board: player 1 at [3,3],[4,4] — player 2 at [3,4],[4,3]
 STARTING_BOARD = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
@@ -19,7 +18,6 @@ STARTING_BOARD = [
   [0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
-# Board where player 1 can immediately take a corner at [0,0]
 CORNER_AVAILABLE_BOARD = [
   [0, 2, 1, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
@@ -31,10 +29,6 @@ CORNER_AVAILABLE_BOARD = [
   [0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
-# Board where playing [0,1] is valid for player 1 but hands corner [0,0] to player 2.
-# Player 1 also has a safe alternative at [5,3].
-# Setup: [0,2]=2, [0,3]=1, [0,4]=2 — playing [0,1] flips [0,2], then player 2 can take [0,0]
-#        by flanking [0,1],[0,2],[0,3] with [0,4].
 CORNER_TRAP_BOARD = [
   [0, 0, 2, 1, 2, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
@@ -46,7 +40,6 @@ CORNER_TRAP_BOARD = [
   [0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
-# Board where no moves are available for player 1
 NO_MOVES_BOARD = [
   [1, 1, 1, 1, 1, 1, 1, 1],
   [1, 1, 1, 1, 1, 1, 1, 1],
@@ -66,12 +59,12 @@ class TestGetFlipped(unittest.TestCase):
     self.assertEqual(flipped, [(4, 3)])
 
   def test_invalid_move_returns_empty(self):
-    # [0,0] has no opponent tiles to flank
+    # [0,0] has no opponent tiles to flip
     flipped = get_flipped(0, 0, 1, STARTING_BOARD)
     self.assertEqual(flipped, [])
 
   def test_occupied_cell_returns_empty(self):
-    # [3,3] is already occupied — placing there flanks nothing
+    # [3,3] is already occupied - no tiles flipped
     flipped = get_flipped(3, 3, 2, STARTING_BOARD)
     self.assertEqual(flipped, [])
 
@@ -111,7 +104,7 @@ class TestGetFlipped(unittest.TestCase):
       [0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0],
     ]
-    # Placing at [3,3] as player 1 should flip [3,2] (left) and [3,4] (right) and [2,3] (up) and [4,3] (down)
+
     flipped = get_flipped(3, 3, 1, board)
     self.assertIn((3, 2), flipped)
     self.assertIn((3, 4), flipped)
