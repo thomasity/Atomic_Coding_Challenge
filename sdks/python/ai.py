@@ -15,19 +15,20 @@ DIRECTIONS = [(-1,0),(1,0),(0,-1),(0,1),(-1,-1),(-1,1),(1,-1),(1,1)]
 ##############################################################
 
 # MOBILITY WEIGHT:
-# Weight to give to mobility (number of valid moves) in the 
-# evaluation function. 
-# Higher means AI prioritizes player's number of movement options more, 
+# Weight to give to mobility (number of valid moves) in the
+# evaluation function.
+# Higher means AI prioritizes player's number of movement options more,
 # lower means AI prioritizes tile count and position more.
 # Briefly experimented with tuning this;
 # found 5 to work just fine, but could change with more testing/trials.
-MOBILITY_WEIGHT = 5 
+MOBILITY_WEIGHT = 5
 
 # POSITION WEIGHTS:
-# Based on short research that corners are very good, 
-# squares adjacent to corners are very bad, 
+# Based on short research that corners are very good,
+# squares adjacent to corners are very bad,
 # and edges are good.
-# See reference/inspiration: https://medium.com/@jackychoi26/how-to-write-an-othello-ai-with-alpha-beta-search-58131ffe67eb
+# See reference/inspiration:
+# https://medium.com/@jackychoi26/how-to-write-an-othello-ai-with-alpha-beta-search-58131ffe67eb
 POSITION_WEIGHTS = [
   [100, -20,  10,   5,   5,  10, -20, 100],
   [-20, -50,   0,   0,   0,   0, -50, -20],
@@ -39,7 +40,7 @@ POSITION_WEIGHTS = [
   [100, -20,  10,   5,   5,  10, -20, 100],
 ]
 
-# Maps minimum turn time (ms) to search depth. 
+# Maps minimum turn time (ms) to search depth.
 # Lowers depth in case server changes max turn time, to avoid timeouts.
 DEPTH_THRESHOLDS = [
   (12000, 4),
@@ -97,7 +98,8 @@ def get_valid_moves(player: int, board: list) -> list:
 
 
 def evaluate_board(player: int, board: list) -> int:
-  """Scores the board for player using tile count, positional weights, and mobility. Positive means player is winning."""
+  """Scores the board for player using tile count, positional weights, and mobility.
+  Positive means player is winning."""
   opponent = PLAYERS[1] if player == PLAYERS[0] else PLAYERS[0]
   tile_score = 0
   position_score = 0
@@ -116,7 +118,8 @@ def evaluate_board(player: int, board: list) -> int:
 
 
 def minimax(board: list, player: int, depth: int, current_player: int) -> int:
-  """Recursively searches ahead by depth turns. Maximizes score on our turns, minimizes on opponent's turns, assuming the opponent plays optimally."""
+  """Recursively searches ahead by depth turns. Maximizes score on our turns,
+  minimizes on opponent's turns, assuming the opponent plays optimally."""
   opponent = PLAYERS[1] if player == PLAYERS[0] else PLAYERS[0]
   next_player = opponent if current_player == player else player
 
@@ -139,13 +142,12 @@ def minimax(board: list, player: int, depth: int, current_player: int) -> int:
       score = minimax(new_board, player, depth - 1, next_player)
       best = max(best, score)
     return best
-  else:
-    best = float('inf')
-    for row, col in valid_moves:
-      new_board = apply_move(row, col, current_player, board)
-      score = minimax(new_board, player, depth - 1, next_player)
-      best = min(best, score)
-    return best
+  best = float('inf')
+  for row, col in valid_moves:
+    new_board = apply_move(row, col, current_player, board)
+    score = minimax(new_board, player, depth - 1, next_player)
+    best = min(best, score)
+  return best
 
 
 def get_move(player: int, board: list, max_turn_time: int) -> Optional[list]:

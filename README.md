@@ -43,12 +43,6 @@ Then open http://localhost:8080 in a browser to watch the game.
 
 ### Running the tests
 
-Unit tests:
 ```
 python3 -m pytest sdks/python/test.py
-```
-
-Integration test (requires Java):
-```
-python3 -m pytest sdks/python/test_integration.py
 ```

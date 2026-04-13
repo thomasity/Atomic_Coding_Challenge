@@ -1,0 +1,9 @@
+[FORMAT]
+indent-string='  '
+max-line-length=120
+
+[MESSAGES CONTROL]
+disable=
+    C0114,  # missing-module-docstring
+    W0621,  # redefined-outer-name (move/response vars in client.py)
+    C0209,  # consider-using-f-string

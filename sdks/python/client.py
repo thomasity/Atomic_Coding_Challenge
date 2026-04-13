@@ -7,6 +7,7 @@ from ai import get_move
 
 
 def prepare_response(move):
+  """Encodes a move as a newline-terminated byte string to send to the server."""
   response = '{}\n'.format(move).encode()
   # print('sending {!r}'.format(response))
   return response
