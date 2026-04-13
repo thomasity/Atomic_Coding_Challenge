@@ -13,7 +13,7 @@ BOARD_SIZE = 8
 # The two player identifiers the server can assign us — update here if the server changes them
 PLAYERS = (1, 2)
 
-# All 8 directions a tile can be approached from (vertical, horizontal, diagonal)
+# All 8 directions a tile can move (vertical, horizontal, diagonal)
 DIRECTIONS = [(-1,0),(1,0),(0,-1),(0,1),(-1,-1),(-1,1),(1,-1),(1,1)]
 
 ##############################################################
@@ -52,8 +52,7 @@ POSITION_WEIGHTS = [
 DEPTH_THRESHOLDS = [
   (12000, 4),
   (3000,  3),
-  (1000,  2),
-  (0,     1),
+  (0,     2),
 ]
 
 def get_depth(max_turn_time: int) -> int:
@@ -61,7 +60,7 @@ def get_depth(max_turn_time: int) -> int:
   for threshold, depth in DEPTH_THRESHOLDS:
     if max_turn_time >= threshold:
       return depth
-  return 1  # Default to depth 1 if no thresholds match, though this should not happen
+  return 2  # Default to depth 2 if no thresholds match, though this should not happen
 
 
 def get_flipped(row: int, col: int, player: int, board: list) -> list:

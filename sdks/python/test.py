@@ -31,6 +31,21 @@ CORNER_AVAILABLE_BOARD = [
   [0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
+# Board where playing [0,1] is valid for player 1 but hands corner [0,0] to player 2.
+# Player 1 also has a safe alternative at [5,3].
+# Setup: [0,2]=2, [0,3]=1, [0,4]=2 — playing [0,1] flips [0,2], then player 2 can take [0,0]
+#        by flanking [0,1],[0,2],[0,3] with [0,4].
+CORNER_TRAP_BOARD = [
+  [0, 0, 2, 1, 2, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 1, 2, 0, 0, 0],
+  [0, 0, 0, 2, 1, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+]
+
 # Board where no moves are available for player 1
 NO_MOVES_BOARD = [
   [1, 1, 1, 1, 1, 1, 1, 1],
@@ -83,6 +98,25 @@ class TestGetFlipped(unittest.TestCase):
     self.assertIn((3, 4), flipped)
     self.assertIn((2, 3), flipped)
     self.assertIn((4, 3), flipped)
+  
+  def test_multi_direction_diagonal_flip(self):
+    # Board where a single move flips tiles in two directions
+    board = [
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 1, 0, 1, 0, 0],
+      [0, 0, 0, 2, 2, 0, 0, 0],
+      [0, 1, 2, 0, 2, 1, 0, 0],
+      [0, 0, 2, 2, 0, 0, 0, 0],
+      [0, 1, 0, 1, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+    ]
+    # Placing at [3,3] as player 1 should flip [3,2] (left) and [3,4] (right) and [2,3] (up) and [4,3] (down)
+    flipped = get_flipped(3, 3, 1, board)
+    self.assertIn((3, 2), flipped)
+    self.assertIn((3, 4), flipped)
+    self.assertIn((2, 4), flipped)
+    self.assertIn((4, 2), flipped)
 
 
 class TestApplyMove(unittest.TestCase):
@@ -90,10 +124,23 @@ class TestApplyMove(unittest.TestCase):
     new_board = apply_move(5, 3, 1, STARTING_BOARD)
     self.assertIsNotNone(new_board)
     self.assertEqual(new_board[5][3], 1)
-    self.assertEqual(new_board[4][3], 1)  # flipped
+    self.assertEqual(new_board[4][3], 1)
 
   def test_invalid_move_returns_none(self):
     self.assertIsNone(apply_move(0, 0, 1, STARTING_BOARD))
+  
+  def test_invalid_edge_move_returns_none(self):
+    board = [
+      [0, 2, 2, 2, 2, 2, 2, 2],
+      [2, 1, 1, 1, 0, 1, 0, 0],
+      [2, 1, 2, 2, 2, 0, 0, 0],
+      [2, 1, 2, 2, 2, 1, 0, 0],
+      [2, 0, 2, 2, 2, 0, 0, 0],
+      [2, 1, 0, 1, 0, 2, 0, 0],
+      [2, 0, 0, 0, 0, 0, 2, 0],
+      [2, 0, 0, 0, 0, 0, 0, 2],
+    ]
+    self.assertIsNone(apply_move(0, 0, 1, board))
 
   def test_does_not_mutate_original_board(self):
     original = copy.deepcopy(STARTING_BOARD)
@@ -104,11 +151,11 @@ class TestApplyMove(unittest.TestCase):
 class TestGetValidMoves(unittest.TestCase):
   def test_starting_board_player_one_has_four_moves(self):
     moves = get_valid_moves(1, STARTING_BOARD)
-    self.assertEqual(len(moves), 4)
+    self.assertEqual(moves, [(2, 4), (3, 5), (4, 2), (5, 3)])
 
   def test_starting_board_player_two_has_four_moves(self):
     moves = get_valid_moves(2, STARTING_BOARD)
-    self.assertEqual(len(moves), 4)
+    self.assertEqual(moves, [(2, 3), (3, 2), (4, 5), (5, 4)])
 
   def test_no_moves_returns_empty(self):
     moves = get_valid_moves(1, NO_MOVES_BOARD)
@@ -129,12 +176,61 @@ class TestEvaluateBoard(unittest.TestCase):
     board = copy.deepcopy(STARTING_BOARD)
     board[0][0] = 1
     self.assertGreater(evaluate_board(1, board), evaluate_board(2, board))
+    
+  def test_player_without_corner_scores_higher(self):
+    board = copy.deepcopy(STARTING_BOARD)
+    board[0][0] = 2
+    self.assertGreater(evaluate_board(2, board), evaluate_board(1, board))
+  
+  def test_player_with_corner_adjacent_tiles_scores_lower(self):
+    board = copy.deepcopy(STARTING_BOARD)
+    board[1][1] = 1
+    board[0][1] = 1
+    board[1][0] = 1
+    self.assertLess(evaluate_board(1, board), evaluate_board(2, board))
 
   def test_opponent_perspective_is_inverse(self):
     # evaluate_board(1) and evaluate_board(2) should be opposites on a symmetric board
     score_p1 = evaluate_board(1, STARTING_BOARD)
     score_p2 = evaluate_board(2, STARTING_BOARD)
     self.assertEqual(score_p1, -score_p2)
+
+
+class TestMinimax(unittest.TestCase):
+  def test_depth_zero_returns_evaluate_board(self):
+    # At depth 0 minimax should just return the static board evaluation
+    self.assertEqual(minimax(STARTING_BOARD, 1, 0, 1), evaluate_board(1, STARTING_BOARD))
+
+  def test_maximizing_returns_best_move_score(self):
+    # At depth 1 on our turn, minimax should return the max score across all our moves
+    best = max(
+      evaluate_board(1, apply_move(r, c, 1, STARTING_BOARD))
+      for r, c in get_valid_moves(1, STARTING_BOARD)
+    )
+    self.assertEqual(minimax(STARTING_BOARD, 1, 1, 1), best)
+
+  def test_minimizing_returns_worst_score_for_us(self):
+    # At depth 1 on the opponent's turn, minimax should return the min score across their moves
+    worst = min(
+      evaluate_board(1, apply_move(r, c, 2, STARTING_BOARD))
+      for r, c in get_valid_moves(2, STARTING_BOARD)
+    )
+    self.assertEqual(minimax(STARTING_BOARD, 1, 1, 2), worst)
+
+  def test_corner_trap_scores_lower_than_safe_move(self):
+    # Playing [0,1] flips [0,2], then player 2 can take corner [0,0].
+    # A safe move at [5,3] doesn't expose the corner.
+    # Minimax should score the risky line lower than the safe one.
+    board_after_risky = apply_move(0, 1, 1, CORNER_TRAP_BOARD)
+    board_after_safe = apply_move(5, 3, 1, CORNER_TRAP_BOARD)
+    risky_score = minimax(board_after_risky, 1, 2, 2)
+    safe_score = minimax(board_after_safe, 1, 2, 2)
+    self.assertGreater(safe_score, risky_score)
+
+  def test_game_over_returns_evaluation(self):
+    # When neither player has moves, minimax should return the board evaluation immediately
+    score = minimax(NO_MOVES_BOARD, 1, 5, 1)
+    self.assertEqual(score, evaluate_board(1, NO_MOVES_BOARD))
 
 
 class TestGetDepth(unittest.TestCase):
