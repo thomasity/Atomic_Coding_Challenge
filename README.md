@@ -6,7 +6,7 @@ The bot is located in `sdks/python/`. It uses a minimax search algorithm with co
 
 ### Acknowledgements
 
-This solution was developed with the assistance of Claude (Anthropic's AI). The AI strategy was inspired by and referenced from [this article on Othello AI with alpha-beta search](https://medium.com/@jackychoi26/how-to-write-an-othello-ai-with-alpha-beta-search-58131ffe67eb).
+This solution was developed with the assistance of Claude (Anthropic's AI). The AI strategy was partially inspired by and referenced from [this article on Othello AI with alpha-beta search](https://medium.com/@jackychoi26/how-to-write-an-othello-ai-with-alpha-beta-search-58131ffe67eb).
 
 ### Prerequisites
 
