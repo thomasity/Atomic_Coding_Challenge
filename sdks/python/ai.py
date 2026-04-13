@@ -5,8 +5,14 @@ from typing import Optional
 ##############################################################
 # Constants for the game. Modify if rules of the game change
 ##############################################################
-BOARD_SIZE = 8 # Controls
+
+# Number of rows and columns on the board
+BOARD_SIZE = 8
+
+# The two player identifiers the server can assign us — update here if the server changes them
 PLAYERS = (1, 2)
+
+# All 8 directions a tile can be approached from (vertical, horizontal, diagonal)
 DIRECTIONS = [(-1,0),(1,0),(0,-1),(0,1),(-1,-1),(-1,1),(1,-1),(1,1)]
 
 ##############################################################
