@@ -6,7 +6,8 @@ from typing import Optional
 # Constants for the game. Modify if rules of the game change
 ##############################################################
 
-# Number of rows and columns on the board
+# Number of rows and columns on the board.
+# If changed, POSITION_WEIGHTS must also be updated to match the new board size.
 BOARD_SIZE = 8
 
 # The two player identifiers the server can assign us — update here if the server changes them
